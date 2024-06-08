@@ -1,0 +1,10 @@
+实现以下各个函数方法：
+void judgeTriangle(const int a, const int b, const int c); // 判断三角形
+int aSum(int a, int n); // 求前n项和
+int daffodils(int num); // 水仙花数
+double myPow(int n, int k); // 求次方
+void diamond1(int row); // 菱形
+void hollowDiamond1(int row); // 空心菱形
+void hollowDiamond2(int row); // 空心菱形2
+void hollowDiamond3(int row); // 空心菱形3
+int drinkSoda(int money); // 喝水问题
