@@ -1,0 +1,6 @@
+实现以下函数：
+int commonMultiple1(int n, int m); // 最小公倍数1
+int commonMultiple2(int n, int m); // 最小公倍数2
+void reverseWord(char arr[]); // 逆序句子中的单词
+int myStrlen(char str[]); // 计算字符传长度
+void reverseStr(char* left, char* right); // 逆序字符串
