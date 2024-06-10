@@ -9,6 +9,18 @@ void judgeLagerOrSmall(void);
 //	int a = 10;
 //	int b = -10;
 //	//judgeLagerOrSmall();
+
+//	int arr1[5] = { 1,3,7,9,22 };
+//	int arr2[6] = { 2,8,10,17,33,44 };
+//	int arr3[11] = { 0 };
+//	int sz1 = sizeof(arr1) / sizeof(arr1[0]);
+//	int sz2 = sizeof(arr2) / sizeof(arr2[0]);
+//	int sz3 = sizeof(arr3) / sizeof(arr3[0]);
+//	reserve_array(arr1, sz1, arr2, sz2, arr3, sz3);
+//	for (int i = 0; i < sz3; i++) {
+//		printf("%d ", arr3[i]);
+//	}
+
 //	return 0;
 //}
 
@@ -61,6 +73,37 @@ void moveOddEven(int arr[], int size) {
 			arr[left] = temp;
 			left++;
 			right--;
+		}
+	}
+}
+
+/*
+有序序列的合并
+输入两个升序排序的序列，将两个序列合并为一个有序序列并输出
+数据范围：1 <= n,m <= 1000，序列中满足 0 <= val <= 30000
+1, 3, 7, 9, 22
+2, 8, 10, 17, 33, 44
+1, 2, 3, 7, 8, 9, 10, 17, 22, 33, 44
+*/
+void reserve_array(int arr1[], int sz1, int arr2[], int sz2, int det[], int sz3) {
+	int i = 0;
+	int j = 0;
+	int k = 0;
+	while (i < sz1 && j < sz2) {
+		if (arr1[i] < arr2[j]) {
+			det[k++] = arr1[i++];
+		} else {
+			det[k++] = arr2[j++];
+		}
+	}
+	if (i < sz1) {
+		for (; i < sz1; i++) {
+			det[k++] = arr1[i];
+		}
+	}
+	if (j < sz2) {
+		for (; j < sz2; j++) {
+			det[k++] = arr2[j];
 		}
 	}
 }
