@@ -186,22 +186,22 @@ Content:
 /*
 笔试题6
 */
-int main() {
-    int aa[2][5] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    int* ptr1 = (int*)(&aa + 1);
-    int* ptr2 = (int*)(*(aa + 1));
-    printf("%d,%d", *(ptr1 - 1), *(ptr2 - 1));
-    return 0;
-}
+//int main() {
+//    int aa[2][5] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+//    int* ptr1 = (int*)(&aa + 1); // ptr1跳过整个数组后的首地址
+//    int* ptr2 = (int*)(*(aa + 1)); // ptr2 = &6
+//    printf("%d,%d", *(ptr1 - 1), *(ptr2 - 1)); // 10, 5
+//    return 0;
+//}
 
 /*
 笔试题7
 */
 //int main() {
-//    char* a[] = { "work","at","alibaba" };
+//    char* a[] = { "work","at","alibaba" }; // a类型为 char(*)[3]，数组指针
 //    char** pa = a;
-//    pa++;
-//    printf("%s\n", *pa);
+//    pa++; // 跳过第一行，指向"at"的首地址
+//    printf("%s\n", *pa); // "at"
 //    return 0;
 //}
 
@@ -209,15 +209,16 @@ int main() {
 /*
 笔试题8
 */
-//int main() {
-//    char* c[] = { "ENTER","NEW","POINT","FIRST" };
-//    char** cp[] = { c + 3,c + 2,c + 1,c };
-//    char*** cpp = cp;
-//    printf("%s\n", **++cpp);
-//    printf("%s\n", *-- * ++cpp + 3);
-//    printf("%s\n", *cpp[-2] + 3);
-//    printf("%s\n", cpp[-1][-1] + 1);
-//    return 0;
-//}
+int main() {
+    char* c[] = { "ENTER","NEW","POINT","FIRST" }; // 数组指针，类型 char(*)[4]
+    char** cp[] = { c + 3,c + 2,c + 1,c }; 
+    // c + 3 的 c 为指向首元素的地址，c + 3 指针后移3个指针大小，指向FIRST
+    char*** cpp = cp;
+    printf("%s\n", **++cpp); // POINT
+    printf("%s\n", *-- * ++cpp + 3); // ER
+    printf("%s\n", *cpp[-2] + 3); // ST
+    printf("%s\n", cpp[-1][-1] + 1); // EW
+    return 0;
+}
 
 
