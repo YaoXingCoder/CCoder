@@ -18,6 +18,9 @@ int my_strcmp1(const char* str1, const char* str2);
 int my_strcmp2(const char* str1, const char* str2);
 char* my_strstr(const char* str1, const char* str2);
 void* my_memcpy(void* dest, void* src, int size);
+void* my_memmove(void* dest, void* src, int size);
+
+
 /*
 strlen，求字符串长度函数
 */
@@ -170,10 +173,39 @@ memmove：内存拷贝
 */
 void use_memmove(void) {
 	int arr1[] = { 1,2,3,4,5,6,7,8 };
-	memmove(arr1 + 2, arr1, 16); // 自复制会出先问题
+	//my_memmove(arr1 + 2, arr1, 16); 
+	memmove(arr1 + 2, arr1, 16);
 	for (int i = 0; i < 8; i++) {
 		printf("%d ", arr1[i]);
 	}
+}
+
+/*
+memcmp：内存比较
+*/
+void use_memcmp(void) {
+	int arr1[] = { 1,2,3,4 };
+	int arr2[] = { 256,2,3,4 };
+	// 因为按字节比较所以，一个大数的低字节小于一个小数的低字节，会出现错误判断
+	if (memcmp(arr1, arr2, 16) > 0) {
+		printf("arr1 > arr2");
+	} else if (memcmp(arr1, arr2, 16) < 0) {
+		printf("arr2 > arr1");
+	} else {
+		printf("arr2 == arr1");
+	}
+}
+
+/*
+memset：填充
+用memset初始化时，注意该函数为内存一个字节一个字节替换
+类型除了char都为一字节以上的
+初始化会不如意
+*/
+void use_memset(void) {
+	char arr[] = "hellow,world";
+	memset(arr, 'x', 5);
+	printf("%s\n", arr);
 }
 
 /*
@@ -190,8 +222,9 @@ int main(void) {
 	//use_strtok();
 	//use_strerror();
 	//use_memcpy();
-	use_memmove();
-
+	//use_memmove();
+	//use_memcmp();
+	use_memset();
 	return 0;
 }
 
