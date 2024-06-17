@@ -81,10 +81,40 @@ void modifyAlignmentNumber(void) {
 }
 
 
+/*
+结构体传参
+*/
+struct S {
+    int data[1000];
+    int num;
+};
+
+// 结构体 传参
+void print1(struct S s) {
+    for (int i = 0; i < 3; i++) {
+        printf("%d ", s.data[i]);
+    }
+    printf("%d\n", s.num);
+}
+
+// 结构体地址 传参
+void print2(const struct S* ps) {
+    for (int i = 0; i < 3; i++) {
+        printf("%d ", ps->data[i]);
+    }
+    printf("%d\n", ps->num);
+}
+
+void structTranPara(void) {
+    struct S s = { {1,2,3,4}, 1000 };
+    print1(s);  // 传结构体
+    print2(&s); // 传地址
+}
 
 int main(void) {
     //structureSize();
-    modifyAlignmentNumber();
+    //modifyAlignmentNumber();
+    //structTranPara();
 	return 0;
 }
 
