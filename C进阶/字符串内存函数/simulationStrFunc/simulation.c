@@ -60,7 +60,7 @@ char* my_strcpy(char* des, const char* sou) {
 
 
 /*
-my_strcpy：复制字符串追加到目标字符串
+my_strcat：复制字符串追加到目标字符串
 char* des：目标函数地址
 const char* sou：被复制的函数地址
 返回类型：char*，目标函数的初始地址
