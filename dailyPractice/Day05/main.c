@@ -3,7 +3,7 @@
 
 /*
 Date:2024.6.15
-Title:wangdao day05 homework
+Title:每日练习 day05
 Content:
 1.掷骰子
 2.德州扑克

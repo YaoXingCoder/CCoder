@@ -14,6 +14,7 @@ Content:功能
 
 static int findByName(const DirectoryData* data); // 找到名字对应的下标
 static int cmpPerByName(const void* e1, const void* e2); // 名字比较
+static void checkCapaticy(DirectoryData* data);
 
 /*
 入口
@@ -47,6 +48,7 @@ void start(void) {
 				sortByName(&data);
 				break;
 			case 0:
+				DestoryData(&data);
 				input = 0;
 				break;
 			default:
@@ -69,23 +71,45 @@ void menu(void) {
 }
 
 /*
-初始化通讯录，置空
+动态初始化
 */
-void initData(DirectoryData* data) {
+int initData(DirectoryData* data) {
 	assert(data);
 	data->count = 0; // 初始化人数为0
-	memset(data->directory, 0, sizeof(data->directory));
+	data->directory = (PerInfo*)calloc(DEFAULT_SZIE, sizeof(PerInfo));
+	if (NULL == data->directory) {
+		printf("initData::%s\n", strerror(errno));
+		return 1;
+	}
+	data->capacity = DEFAULT_SZIE;
+	return 0;
+}
+
+void DestoryData(DirectoryData* data) {
+	assert(data);
+	free(data->directory);
+	data->directory = NULL;
+	data = NULL;
 }
 
 /*
+静态初始化
+初始化通讯录，置空
+*/
+//void initData(DirectoryData* data) {
+//	assert(data);
+//	data->count = 0; // 初始化人数为0
+//	memset(data->directory, 0, sizeof(data->directory)); // 对已有空间置空
+//}
+
+/*
+动态
 添加联系人
 */
 void add(DirectoryData* data) {
 	assert(data);
-	if (data->count > MAX) {
-		printf("DirectoryData is full.\n");
-		return;
-	}
+	checkCapaticy(data);
+	
 	PerInfo* p = &(data->directory[data->count]);
 	printf("Enter your Name:");
 	scanf("%s", &(p->name));
@@ -98,11 +122,40 @@ void add(DirectoryData* data) {
 	printf("Enter your Address:");
 	scanf("%s", &(p->addr));
 
-	while ('\n' != getchar())	; // 消除stdin
-	
+	while ('\n' != getchar()); // 消除stdin
+
 	data->count++;
 	printf("Add Successfully\n");
 }
+
+
+/*
+静态
+添加联系人
+*/
+//void add(DirectoryData* data) {
+//	assert(data);
+//	if (data->count > MAX) {
+//		printf("DirectoryData is full.\n");
+//		return;
+//	}
+//	PerInfo* p = &(data->directory[data->count]);
+//	printf("Enter your Name:");
+//	scanf("%s", &(p->name));
+//	printf("Enter your Age:");
+//	scanf("%d", &(p->age));
+//	printf("Enter your Gender:");
+//	scanf("%s", &(p->gender));
+//	printf("Enter your PhoneNum:");
+//	scanf("%s", &(p->phoneNum));
+//	printf("Enter your Address:");
+//	scanf("%s", &(p->addr));
+//
+//	while ('\n' != getchar())	; // 消除stdin
+//	
+//	data->count++;
+//	printf("Add Successfully\n");
+//}
 
 /*
 打印全部联系人
@@ -248,4 +301,22 @@ void sortByName(DirectoryData* data) {
 
 static int cmpPerByName(const void* e1, const void* e2) {
 	return strcmp(((PerInfo*)e1)->name, ((PerInfo*)e2)->name);
+}
+
+
+/*
+扩容函数
+*/
+static void checkCapaticy(DirectoryData* data) {
+	if (data->count == data->capacity) { // 当新添加的达到与空间一致则重新申请扩容
+		PerInfo* ptr = (PerInfo*)realloc(data->directory, sizeof(PerInfo) * (data->capacity + INCREMENTAL_INTERVAL));
+		if (NULL == ptr) {
+			printf("add::%s\n", strerror(errno));
+			return;
+		} else {
+			data->directory = ptr;
+			data->capacity += INCREMENTAL_INTERVAL;
+			printf("Successful expansion\n");
+		}
+	}
 }
