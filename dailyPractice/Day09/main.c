@@ -1,13 +1,12 @@
-#define _CRT_SECURE_NO_WARNINGS 1
-#include <stdio.h>
-#include <stddef.h>
-#include <string.h>
+#include "vector.h"
 
 /*
 Date:2024.6.20
 Title:每日练习Day09
 Content:
-
+1.有这样一种学生结构体类型，其数据成员有包括学号，姓名和3门课程的成绩。实现下列功能
+2.设计一个动态数组，当数组空间不够时，它可以自动扩容
+3.定义一个枚举类型Month，包含一年中的12个月份，并为每个月份分配一个从1开始的数字值。
 */
 #define STU_NUM 5
 
@@ -128,12 +127,38 @@ void bubbleSortByScore(Student* stu, int num) {
     }
 }
 
+//int main(void) {
+//    Student stu[STU_NUM];
+//    saveInfo(stu, STU_NUM);
+//    //printAllStu(stu, STU_NUM);
+//    //printMaxScore(stu, STU_NUM);
+//    bubbleSortByScore(stu, STU_NUM);
+//    printAllStu(stu);
+//	//return 0;
+//}
+
+
+//typedef enum month Month; // 仅声明未定义
+
+extern unsigned int daysOfMonth(int year, Month month);
+
+/*
+设计一个动态数组，当数组空间不够时，它可以自动扩容。
+*/
 int main(void) {
-    Student stu[STU_NUM];
- //   saveInfo(stu, STU_NUM);
- //   //printAllStu(stu, STU_NUM);
- //   //printMaxScore(stu, STU_NUM);
- //   bubbleSortByScore(stu, STU_NUM);
- //   printAllStu(stu);
-	//return 0;
+
+    /* 动态数组 */
+    //Vector* v = vectorCreate();
+    //for (int i = 0; i < 10; i++) {
+    //    push_front(v, i);
+    //}
+    //printf("%d",pop_back(v));
+    //printf("%d",pop_front(v));
+    //destoryVector(v);
+
+    /* 返回该月份有多少天 */
+    int year = 2024;
+    enum month month = February;
+    printf("Days in February: %d\n", daysOfMonth(year, month));
+    return 0;
 }
