@@ -54,5 +54,8 @@ bool delete_val(LinkedList* list, const E val);
 // 返回val第一次出现的结点
 LNode* first_val(const LinkedList* list, const E val);
 
+// 根据索引搜索结点
+LNode* find_by_index(const LinkedList* list, const E index);
+
 // 打印所有结点
 void printAllNodes(const LinkedList* list);

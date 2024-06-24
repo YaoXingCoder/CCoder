@@ -40,31 +40,33 @@ ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
     while (ascList1 && ascList2) {
         if (ascList1->data < ascList2->data) {
             temp = ascList1->next;
-            insertTail(phead, ascList1);
+            insertTail(&phead, ascList1);
             ascList1 = temp;
         } else {
             temp = ascList2->next;
-            insertTail(phead, ascList2);
+            insertTail(&phead, ascList2);
             ascList2 = temp;
         }
-        // tail = tail->next;
     }
     while (ascList1) {
-        // tail->next = ascList1;
-        insertTail(phead, ascList1);
+        temp = ascList1->next;
+        insertTail(&phead, ascList1);
+        ascList1 = temp;
     }
     while (ascList2) {
-        // tail->next = ascList2;
-        insertTail(phead, ascList2);
+        temp = ascList2->next;
+        insertTail(&phead, ascList2);
+        ascList2 = temp;
     }
     return phead;
 }
 
-void insertTail(ListNode* phead, ListNode* newNode) {
-    ListNode* curr = phead;
+void insertTail(ListNode** phead, ListNode* newNode) {
+    ListNode* curr = *phead;
     if (!curr) {
         curr = newNode;
         newNode->next = NULL;
+        *phead = curr;
         return;
     }
     while (curr->next) {

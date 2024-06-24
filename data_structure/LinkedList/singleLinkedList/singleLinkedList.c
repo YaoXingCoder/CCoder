@@ -14,6 +14,7 @@ Content:
 */
 LinkedList* createLinkedList(void) {
 	// 链表 开辟空间 LinkedList
+	// 使用calloc可以自动初始化成员为默认零值,更加省事
 	LinkedList* newList = (LinkedList*)calloc(1, sizeof(LinkedList));
 	if (!newList) {
 		perror("newList");
@@ -92,10 +93,12 @@ bool insert_head(LinkedList* list, const E val) {
 		perror("insert_head:newNode");
 		return false;
 	}
+
+	// 结点初始化
 	newNode->data = val;
+	newNode->next = list->head->next;
 
 	// 插入
-	newNode->next = list->head->next;
 	list->head->next = newNode;
 
 	// 尾结点检查
@@ -113,17 +116,19 @@ bool insert_head(LinkedList* list, const E val) {
 尾插
 */
 bool insert_tail(LinkedList* list, const E val) {
-	// 新结点
+	// 分配一个新节点
 	assert(list);
 	LNode* newNode = (LNode*)calloc(1, sizeof(LNode));
 	if (!newNode) {
 		perror("insert_head:newNode");
 		return false;
 	}
+
+	// 新节点初始化
 	newNode->data = val;
+	newNode->next = NULL;
 
 	// 插入
-	list->tail->next->next = newNode;
 	list->tail->next = newNode;
 
 	// 头结点检查
@@ -133,6 +138,7 @@ bool insert_tail(LinkedList* list, const E val) {
 
 	// 链表大小++
 	list->size++;
+
 	return true;
 }
 
@@ -146,6 +152,14 @@ bool insert_pos(LinkedList* list, const int index, const E val) {
 		return false;
 	}
 
+	// index = 0 为头插，index = size 为尾插
+	if (index == 0) {
+		return (insert_head(list, val));
+	}  	
+	if (index == list->size) {
+		return (insert_tail(list, val));
+	}
+
 	// 新结点
 	assert(list);
 	LNode* newNode = (LNode*)calloc(1, sizeof(LNode));
@@ -155,20 +169,14 @@ bool insert_pos(LinkedList* list, const int index, const E val) {
 	}
 	newNode->data = val;
 
-	// index = 0 为头插，index = size 为尾插
-	if (index == 0) {
-		if (insert_head(list, val)) return true;
-		else return false;
-	} else if (index == list->size) {
-		if (insert_tail(list, val)) return true;
-		else return false;
-	}
 
-	// 遍历寻找位置，并插入
+	// 遍历寻找位置，循环结束后, prev指针指向curr索引前面的一个结点
 	LNode* curr = list->head->next;
 	for (int i = 0; i < index - 1; i++) {
 		curr = curr->next;
 	}
+	// 在index位置, 插入新结点. 
+	// 该过程先让新结点指向curr的后继结点, 再让curr结点指向新结点
 	newNode->next = curr->next;
 	curr->next = newNode;
 
@@ -181,25 +189,23 @@ bool insert_pos(LinkedList* list, const int index, const E val) {
 头删
 */
 bool delete_head(LinkedList* list) {
+	// 判空
 	assert(list);
-	if (isEmpty(list)) {
-		printf("LinkedList has no Node");
-		return false;
-	}
-
-	// 只有一个结点可以删除
+	return (isEmpty(list));
+	
+	// 将头结点指向首结点的下个结点
 	LNode* curr = list->head->next;
-	if (list->size == 1) {
-		free(curr);
-		list->head->next = NULL;
+	list->head->next = curr->next;
+	
+	// 删除结点后长度为0，尾结点指向置空
+	if (list->size - 1 == 0) {
 		list->tail->next = NULL;
-		list->size--;
-		return true;
+	
 	}
 
-	list->head->next = curr->next;
-	list->size--;
+	// 释放目标结点，长度-1
 	free(curr);
+	list->size--;
 	return true;
 }
 
@@ -208,31 +214,25 @@ bool delete_head(LinkedList* list) {
 */
 bool delete_tail(LinkedList* list) {
 	assert(list);
-	if (!list->size) {
-		printf("LinkedList has no Node");
-		return false;
-	}
-
-	// 只有一个结点可以删除
-	LNode* curr;
-	if (list->size == 1) {
-		curr = list->tail->next;
-		free(curr);
-		list->head->next = NULL;
-		list->tail->next = NULL;
-		list->size--;
-		return true;
-	}
-
-	curr = list->head->next;
-	while (curr->next->next) {
+	return (isEmpty(list));
+	
+	// 找到尾结点的前驱结点
+	LNode* curr = list->head;
+	while (curr->next != list->tail->next) {
 		curr = curr->next;
 	}
+
+	// 更改尾指针指向前驱结点，并将前驱结点指向置空
 	list->tail->next = curr;
 	curr = curr->next;
 	list->tail->next->next = NULL;
+
+	// 释放尾结点，长度-1
 	free(curr);
-	list->size--;
+	// 如果删除后长度=0，尾结点置空
+	if (--list->size) {
+		list->tail->next = NULL;
+	};
 	return true;
 }
 
@@ -241,32 +241,33 @@ bool delete_tail(LinkedList* list) {
 */
 bool delete_pos(LinkedList* list, int index) {
 	assert(list);
-	if (isEmpty(list)) {
-		printf("LinkedList has no Node");
-		return false;
-	}
+	// 链表是否为空
+	return isEmpty(list);
+	
 	// 位置有效性
-	if (index < 0 || index > list->size) {
+	if (index < 0 || index > list->size - 1) {
 		printf("index is invalid position!\n");
 		return false;
-	}
-
-	//index = size 为尾删
-	if (index == list->size) {
-		if (delete_tail(list)) return true;
-		else return false;
 	}
 
 	// 需要两个结点，一个当前需要删除的结点，一个前置结点用于链接下一个结点
 	LNode* pre = list->head;
 	LNode* curr = list->head->next;
-	while (--index) {
+	while (index--) {
 		pre = curr;
 		curr = curr->next;
 	}
+
+	// 将前驱结点指向目标节点的next
 	pre->next = curr->next;
+	// 若删除的尾结点
+	if (list->tail->next = curr) {
+		list->tail->next = pre;
+	}
 	free(curr);
-	list->size--;
+	if (--list->size) {
+		list->tail->next = NULL;
+	}
 	return true;
 }
 
@@ -279,19 +280,32 @@ bool delete_val(LinkedList* list, const E val) {
 		printf("LinkedList has no Node");
 		return false;
 	}
+
+	// 查找该值是否在链表中
 	LNode* curr = first_val(list, val);
 	if (!curr) {
 		printf("the value is not in list");
 		return false;
 	}
-	LNode* pre = list->head->next;
+
+	// 找到结点的前驱结点
+	LNode* pre = list->head;
 	for ( ; pre->next != curr ; pre = pre->next) {
 		;
 	}
+
+	// 更新前驱结点指向删除结点的下一个结点
+	pre->next = curr->next;
+	// 如果尾结点指向需要删除的结点，将尾结点指向前驱结点，
+	// 如果size = 1时，尾结点指向置空
 	if (list->tail->next == curr) {
 		list->tail->next = pre;
+		if (list->size - 1 == 0) {
+			list->tail->next = NULL;
+		}
 	}
-	pre->next = curr->next;
+
+	// 释放结点，大小-1
 	free(curr);
 	list->size--;
 	return true;
@@ -302,17 +316,32 @@ bool delete_val(LinkedList* list, const E val) {
 */
 LNode* first_val(const LinkedList* list, const E val) {
 	assert(list);
-	if (isEmpty(list)) {
-		printf("LinkedList has no Node");
+	LNode* curr = list->head->next;
+	if (!isEmpty(list)) {
+		while (curr->next) {
+			if (curr->data == val) return curr;
+			curr = curr->next;
+		}
+	}
+	return NULL;
+}
+
+/*
+根据索引搜索结点
+*/
+LNode* find_by_index(const LinkedList* list, const E index) {
+	// 位置有效性
+	if (index < 0 || index > list->size - 1) {
+		perror("find_by_index");
 		return NULL;
 	}
 
 	LNode* curr = list->head->next;
-	while (curr->next) {
-		if (curr->data == val) return curr;
+	for (int i = 0; i < index; i++) {
 		curr = curr->next;
-	}
-	return NULL;
+	} // 循环结束时, curr指针就指向idx位置的结点
+	
+	return curr;
 }
 
 /*

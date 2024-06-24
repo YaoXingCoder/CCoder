@@ -116,6 +116,41 @@ int main(void) {
 //}
 
 
+/*
+合并两条有序链表 (21. 合并两个有序链表）
+*/
+//struct ListNode* mergeTwoLists(struct ListNode* list1, struct ListNode* list2) {
+//    if (!list1) // 如果list1为空
+//        return list2;
+//    if (!list2) // 如果list2为空
+//        return list1;
+//    struct ListNode temp = { 0 };
+//    struct ListNode* tail = &temp;
+//    struct ListNode* ascList1 = list1;
+//    struct ListNode* ascList2 = list2;
+//    while (ascList1 && ascList2) {
+//        if (ascList1->val < ascList2->val) {
+//            tail->next = ascList1;
+//            ascList1 = ascList1->next;
+//        } else {
+//            tail->next = ascList2;
+//            ascList2 = ascList2->next;
+//        }
+//        tail = tail->next;
+//    }
+//    if (ascList1) {
+//        tail->next = ascList1;
+//    }
+//    if (ascList2) {
+//        tail->next = ascList2;
+//    }
+//    return temp.next;
+//}
+
+
+
+
+
 //void insertTail(struct ListNode** phead, struct ListNode* newNode) {
 //    struct ListNode* curr = *phead;
 //    if (!curr) {
