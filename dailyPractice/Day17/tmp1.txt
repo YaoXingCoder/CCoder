@@ -1,0 +1,4 @@
+1.Allen f 100 100 100
+2.Beyonce f 90 90 90
+3.Cindy f 95 95 95
+4.Dianna f 98 98 98

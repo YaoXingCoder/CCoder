@@ -29,8 +29,9 @@ void printAll(int arr[], int n) {
 
 /* 将数组打乱 */
 void shuffle(int arr[], int len) {
-	int randNum = rand() % len;
+	int randNum;
 	for (int i = 0; i < len; i++) {
+		randNum = rand() % len;
 		SWAP(arr, i, randNum);
 	}
 }
