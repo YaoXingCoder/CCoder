@@ -68,8 +68,8 @@ void* start_routine(void* arg){
     // 循环
     for(;;) { 
         i++;
-      //  printf("hello %d \n", i); // 取消点
-      //  sleep(1); // 取消点
+        printf("hello %d \n", i); // 取消点
+        sleep(1); // 取消点
     }
     return (void*)9425; // 执行不到
 }
@@ -99,6 +99,12 @@ int main(int argc, char* argv[]) {
     // Student* s = NULL;
     // err = pthread_join(tid, (void**)&s);
     if (err) { error(1, err, "pthread_join"); } // 错误处理
+    
+    // 如果取消类型为DEFERRED且收取取消请求后join的到的返回值
+    if (ret == PTHREAD_CANCELED) {
+        printf("thread %#lx has been canceled\n", tid);
+    }
+
 
     // 打印接收值
     printf("ret is %lu \n", (long)ret);

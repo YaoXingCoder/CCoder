@@ -50,22 +50,24 @@ void* start_routine(void* arg){
     // pthread_exit(NULL); // 不会执行后边线程处理函数
 
     // 添加线程清理函数
-    pthread_cleanup_push(routine, "111");
-    pthread_cleanup_push(routine, "222");
+    pthread_cleanup_push(routine, (void*)"111");
+    pthread_cleanup_push(routine, (void*)"222");
 
-    pthread_cleanup_pop(1);
 
     // exit(1); // 退出,只执行一次
-    pthread_exit(NULL); // 执行结束
+    // pthread_exit(NULL); // 执行结束
 
     printf("new thread Begin...\n");
     sleep(3);
     printf("new thread End...\n");
 
+    return (void*)9425;
+
     // 清理函数出栈
     pthread_cleanup_pop(1);
+    pthread_cleanup_pop(1);
 
-    return (void*)9425; // 返回值
+    // return (void*)9425; // 返回值
 }
 
 // 主函数
