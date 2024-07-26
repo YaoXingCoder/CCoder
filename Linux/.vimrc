@@ -1,14 +1,16 @@
-set cmdheight=2
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 函数参数提示
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:echodoc_enable_at_startup = 1
-
-let g:echodoc#enable_at_startup = 1
 let g:echodoc#type = 'popup'
-" To use a custom highlight for the popup window,
-" change Pmenu to your highlight group
-highlight link EchoDocPopup Pmenu
+highlight link EchoDocFloat Pmenu
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 状态行显示增加
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set laststatus=2         " 总是显示状态栏
-"set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [POS=%l,%v][%p%%]\ %{strftime(\"%d/%m/%y\ -\ %H:%M\")}   "状态行显示的内容
+set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [POS=%l,%v][%p%%]\ %{strftime(\"%d/%m/%y\ -\ %H:%M\")}   "状态行显示的内容
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " 通用设置
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
