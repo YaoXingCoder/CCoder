@@ -1,0 +1,88 @@
+/*************************************************************************
+    > File Name: transferFile_small.c
+    > Author: JiaZiChunQiu
+    > Created Time: 2024年07月26日 星期五 20时57分54秒
+    > Mail: JiaZiChunQiu@163.com
+    > Title: 传输文件函数
+    > Content:
+    >   1.因为tcp通信时字节流的, 字节流无边界
+    >   2.所以发送内容前, 应先发送文件的名字和长度, 此时读取长度类型为约定俗成的int
+    >   3.再发送文件的内容
+ ************************************************************************/
+
+#include "process_pool.h"
+
+#define FILE_NAME "1.ev4"
+
+/* 指定n字节长度发送
+ * sockfd, 需要发送到的套接字描述符
+ * buff, 缓冲区
+ * len, 需要发送的长度
+ * */
+int sendn(int socketfd, const void* buff, int len) {
+    int remainsLen = len;
+    const char* pbuff = (char*)buff;
+    int hasSend = -1; // 从buff读取, 写入套接字的大小
+    while(remainsLen > 0) {
+        hasSend = send(socketfd, pbuff, remainsLen, 0);
+        if ( hasSend == 0 ) { break; }
+        if ( hasSend < 0 ) {
+            perror("send sendn");
+            return -1;
+        }
+
+        remainsLen -= hasSend;
+        pbuff += hasSend;
+    }
+    return len - remainsLen; // 返回已发送的字节数
+}
+
+int transferFile(int peerfd) {
+    // 打开需要文件, 读
+    int fd = open(FILE_NAME, O_RDONLY);
+    ERROR_CHECK(fd, -1, "open");
+    
+    // 文件名
+    // 文件长度 + 文件名
+    int len_fileName = 0;
+    len_fileName = strlen(FILE_NAME);
+    train_t t_file; // 文件结构体
+    memset(&t_file, 0, sizeof(t_file));
+    t_file.len = len_fileName;
+    strcpy(t_file.buff, FILE_NAME);
+    int ret = send(peerfd, &t_file, 4 + t_file.len, 0); // 发送文件结构体: 文件长度 + 文件名
+    ERROR_CHECK(ret, -1, "send len_fileName + fileName");
+
+    // 获取文件内容大小
+    struct stat st_file;
+    memset(&st_file, 0, sizeof(st_file));
+    ret = fstat(fd, &st_file);
+    ERROR_CHECK(ret, -1, "fstat");
+    int len_fileSize = st_file.st_size; // 获取内容大小
+
+    // 文件内容
+    // 先发送文件内容大小
+    ret = send(peerfd, &len_fileSize, sizeof(len_fileSize), 0);
+    ERROR_CHECK(ret, -1, "send len_fileSize");
+    printf("the file is %s, and size is %d\n", t_file.buff, len_fileSize);
+    
+    // 多次读取并发送 文件内容
+    int totalSize = 0; // 记录已发送字节数
+    int times = 0;
+    while( totalSize < len_fileSize ) {
+        memset(&t_file, 0, sizeof(t_file));
+        int readSize = read(fd, t_file.buff, FILE_SMALL);
+        if ( readSize > 0 ) {
+            t_file.len = readSize;
+            // ret = send(peerfd, &t_file, 4 + t_file.len, 0); // 可能会阻塞, 将缓冲区填满
+            ret = sendn(peerfd, &t_file, 4 + t_file.len);
+            printf("%d times ret is %d\n", ++times, ret);
+            ERROR_CHECK(ret, -1, "filecontent send"); // 被忽略后SIGPIPE不会导致进程终止, 
+            if (ret < 0) { break; }
+            totalSize += readSize;
+            printf("Remains is %d\n", len_fileSize - totalSize);
+        }   
+    }
+
+    return 0;
+}
