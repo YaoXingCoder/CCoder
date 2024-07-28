@@ -9,14 +9,22 @@
  ************************************************************************/
 
 #include "../process_pool.h"
-#include <time.h>
-
+#include <bits/types/stack_t.h>
+#include <dirent.h>
+#include <endian.h>
+#include <fcntl.h>
+#include <netinet/in.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/select.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
 int main (int argc, char* argv[]) {
     // 创建socket套接字
     int clientfd = socket(AF_INET, SOCK_STREAM, 0);
     ERROR_CHECK(clientfd, -1, "socket");
-
+    
     // 地址
     struct sockaddr_in serverAddr;
     memset(&serverAddr, 0, sizeof(serverAddr));
@@ -30,38 +38,26 @@ int main (int argc, char* argv[]) {
     ERROR_CHECK(ret, -1, "connect");
     printf("client is connected server\n");
 
+    // 用户态数据缓冲
+    train_t st_file;
 
-    // 先接受文件长度
-    int len_filename = 0;
-    ret = recv(clientfd, &len_filename, sizeof(len_filename), 0);
-    printf("the size of filename is %d\n", len_filename);
-    ERROR_CHECK(ret, -1, "recv len_filename");
+    // 先接受文件名字
+    memset(&st_file, 0, sizeof(st_file));
+    ret = recv(clientfd, &st_file, sizeof(st_file), 0);
+    ERROR_CHECK(ret, -1, "recv");
+    printf("the size of filename is %d\n", st_file.len);
+    printf("filename is %s\n", st_file.buff);
 
-    // 接收文件名字
-    char filename[100] = {0};
-    ret = recv(clientfd, filename, len_filename, 0);
-    ERROR_CHECK(ret, -1, "recv filename");
-    printf("filename is %s\n", filename);
-
-    // 打开/创建文件
-    int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    int fd = open(st_file.buff, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     ERROR_CHECK(fd, -1, "open");
 
-    // 接收文件内容长度
-    int len_filecontent = 0;
-    ret = recv(clientfd, &len_filecontent, sizeof(len_filecontent), 0);
-    ERROR_CHECK(ret, -1, "recv len_filecontent");
-    printf("the size of file is %d\n", len_filecontent);
-
     // 接收文件内容
-    char filecontent[FILE_SMALL] = { 0 };
-    ret = recv(clientfd, filecontent, len_filecontent, 0);
-    ERROR_CHECK(ret, -1, "recv filecontent");
-    printf("file content is %s\n", filecontent);
-
-    // 写入文件
-    int writeNum = write(fd, filecontent, len_filecontent);
+    memset(&st_file, 0, sizeof(st_file));
+    ret = recv(clientfd, &st_file, sizeof(st_file), 0);
+    ERROR_CHECK(ret, -1, "recv");
+    int writeNum = write(fd, st_file.buff, st_file.len);
     ERROR_CHECK(writeNum, -1, "write");
+    printf("the size of file is %d\n", st_file.len);
 
     return 0;
 }

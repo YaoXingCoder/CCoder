@@ -8,13 +8,11 @@
     >   1.因为tcp通信时字节流的, 字节流无边界
     >   2.所以发送内容前, 应先发送文件的名字和长度, 此时读取长度类型为约定俗成的int
     >   3.再发送文件的内容
+
+    >   4.mmap映射传输, 不再使用用户态的缓冲
  ************************************************************************/
 
 #include "process_pool.h"
-#include <bits/types/stack_t.h>
-#include <pthread.h>
-#include <string.h>
-#include <sys/stat.h>
 
 #define FILE_NAME "1.ev4"
 
@@ -45,19 +43,27 @@ int transferFile(int peerfd) {
     // 先发送文件内容大小
     ret = send(peerfd, &len_fileSize, sizeof(len_fileSize), 0);
     ERROR_CHECK(ret, -1, "send len_fileSize");
+    printf("the file is %s, and size is %d\n", t_file.buff, len_fileSize);
     
-    // 多次读取并发送 文件内容
-    int totalSize = 0; // 记录已发送字节数
-    while( totalSize < len_fileSize ) {
-        memset(&t_file, 0, sizeof(t_file));
-        int readSize = read(fd, t_file.buff, FILE_SMALL);
-        if ( readSize > 0 ) {
-            t_file.len = readSize;
-            ret = send(peerfd, &t_file, 4 + t_file.len, 0);
-            ERROR_CHECK(ret, -1, "filecontent send");
-            totalSize += readSize;
-        }   
+    // mmap映射文件并, 发送
+    // char* pMap = mmap(NULL, len_fileSize, PROT_READ, MAP_PRIVATE, fd, 0);
+    // int sendNum = send(peerfd, pMap, len_fileSize, 0);
+    // printf("send filecontent size is %d\n", sendNum);
+
+    // sendfile
+    // ret = sendfile(peerfd, fd, NULL, len_fileSize);
+    // printf("sendfile filecontent size is %d\n", ret);
+    
+    // splic
+    int sendSize = 0;
+    int fds[2];
+    ret = pipe(fds);
+    while( sendSize < len_fileSize ) {
+        ret = splice(fd, NULL, fds[1], NULL, 4096 , SPLICE_F_MORE);
+        ret = splice(fds[0], NULL, peerfd, NULL, ret, SPLICE_F_MORE);
+        sendSize += ret;
     }
+    // printf("sendfile filecontent size is %d\n", ret);
 
     return 0;
 }

@@ -8,6 +8,7 @@
  ************************************************************************/
 
 #include "process_pool.h"
+#include <signal.h>
 
 /* 传入 IP, PORT, 要创建进程数  */
 int main (int argc, char* argv[]) {
@@ -16,6 +17,9 @@ int main (int argc, char* argv[]) {
     // 开辟堆空间存放进程
     int processNum = atoi(argv[3]);
     PROCESS_DATA* pProcess = (PROCESS_DATA*)calloc(processNum, sizeof(PROCESS_DATA));
+
+    // 父子进程忽略SIGPIPE, 在mkProcess之前
+    signal(SIGPIPE, SIG_IGN); // 子进程会复制父进程的堆栈
     
     // 创建argv[4]个进程
     mkProcess(pProcess, processNum);
@@ -45,7 +49,7 @@ int main (int argc, char* argv[]) {
         for( int i = 0; i < nready; ++i ) {
             int fd = eventArr[i].data.fd; // 就绪事件的套接字
 
-            // 新用户
+            // 有客户端连接
             if ( fd == listenfd ) {
                 // 接收并记录新客户端地址
                 struct sockaddr_in clientAddr;

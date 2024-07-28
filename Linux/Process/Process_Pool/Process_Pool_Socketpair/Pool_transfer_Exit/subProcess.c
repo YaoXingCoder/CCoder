@@ -37,14 +37,16 @@ int mkProcess(PROCESS_DATA* pProcess, int prNum) {
 }
 
 int doTask(int skpfd) {
-    printf("subProcess %d is doTask...\n", getpid());
     while(1) {
         int peerfd = -1;
-        recvFd(skpfd, &peerfd); // 读取父进程, 传入的套接字
-
-        // send(peerfd, "hello,client", 12, 0);
+        char exitFlag = 0;
+        recvFd(skpfd, &exitFlag ,&peerfd); // 读取父进程, 传入的套接字
+                                // 阻塞在这里, 接收到父进程传入数据后, 不再阻塞开始执行任务
+        if (exitFlag){ break; }
+                                // send(peerfd, "hello,client", 12, 0);
+        printf("subProcess %d is doTask...\n", getpid());
         transferFile(peerfd);
-        printf("child %d send finished.\n", getpid());
+        printf("subProcess %d send finished.\n", getpid());
 
         close(peerfd);
 

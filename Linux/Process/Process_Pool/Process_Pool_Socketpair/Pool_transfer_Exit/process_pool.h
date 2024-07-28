@@ -10,6 +10,7 @@
 #ifndef _FUNC_H
 #define _FUNC_H
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,6 +35,7 @@
 #include <sys/ioctl.h>
 #include <pthread.h>
 #include <sys/uio.h>
+#include <sys/sendfile.h>
 
 #define SIZE(a) (sizeof(a)/sizeof(a[0]))
 #define FILE_SMALL 4096
@@ -78,8 +80,8 @@ int mkProcess(PROCESS_DATA* pProcess, int prNum);
 int doTask(int skpfd);
 
 // sendFd recvFd
-int sendFd(int skpfd, int fd);
-int recvFd(int skpfd, int* fd);
+int sendFd(int skpfd, char exitFlag, int fd);
+int recvFd(int skpfd, char* exitFlag, int* fd);
 
 // 服务端
 int tcpInit (const char* ip, const unsigned short port);
