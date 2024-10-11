@@ -163,7 +163,7 @@ int parseCommand(const char * input, int len_input, train_t * pt){
     splitString(input, " ", pstrs, 10, &cnt);
     // printf("pstrs[0] is %s, pstrs[1] is %s\n", pstrs[0], pstrs[1]);
     pt -> type = getCommandType(pstrs[0]); // 根据字符串获取相应的type
-    // printf("pt->type is %d\n", pt->type);
+    printf("pt->type is %d\n", pt->type);
 
     /* 命令格式 暂时只有 1.cmd  2.cmd content */
     if ( cnt == 2 ) {
@@ -173,7 +173,6 @@ int parseCommand(const char * input, int len_input, train_t * pt){
 
     if ( cnt == 3 ) {
         int len_pstrs1 = strlen(pstrs[1]);
-        // strncpy(pt->buff, pstrs[1], pt->len); // 指令的参数传入t.buff
         strncpy(pt->buff, pstrs[1], len_pstrs1); // 指令的参数传入t.buff
         // printf("pstrs[1] is :%s, %d\n", pstrs[1], len_pstrs1);
 
@@ -185,7 +184,7 @@ int parseCommand(const char * input, int len_input, train_t * pt){
 
         pt->len = strlen(pt->buff);
     }
-    // printf("pt->buff is :%s, %d\n", pt->buff, pt->len);
+    printf("pt->buff is :%s, %d\n", pt->buff, pt->len);
 
     freeStrs(pstrs, cnt);
     return 0;
@@ -202,6 +201,7 @@ int getCommandType(const char * str){
     else if (!strcmp(str, "rmdir")) return CMD_TYPE_RMDIR;
     else if (!strcmp(str, "puts"))  return CMD_TYPE_PUTS;
     else if (!strcmp(str, "gets"))  return CMD_TYPE_GETS;
+    else if (!strcmp(str, "tree"))  return CMD_TYPE_TREE;
     else return CMD_TYPE_NOTCMD;
 }
 

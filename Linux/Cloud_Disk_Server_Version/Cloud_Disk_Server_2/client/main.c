@@ -51,8 +51,8 @@ int main (int argc, char* argv[]) {
             memset(&t, 0, sizeof(t));
             int ret = read(STDIN_FILENO, buf, sizeof(buf));
             if ( ret == 0 ) { printf("byebye.\n"); break; }
-            if (strcmp(buf, "\n") == 0) { continue;  }
-            // printf("\nstrlen buf is %ld", strlen(buf));
+            if (strcmp(buf, "\n") == 0) { continue;  } /* 处理回车 */
+            /* printf("\nstrlen buf is %ld\n", strlen(buf)); */
 
             /* 解释命令, 并存入消息头中*/
             buf[strlen(buf) -1] = '\0'; // 将换行符换为 空字符

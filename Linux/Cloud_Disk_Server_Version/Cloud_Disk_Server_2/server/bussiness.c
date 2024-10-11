@@ -15,7 +15,7 @@
 #include "linked_list.h"
 #include "user.h"
 
-#define SERVER_LOG_PAHT "/home/coder/MyProgram/Linux/Cloud_Disk_Server_Version/Cloud_Disk_Server_2/log/cloud_server" /* 日志存储相对路径 相对于程序执行的server */
+#define SERVER_LOG_PAHT "/home/coder/CLearning/Linux/Cloud_Disk_Server_Version/Cloud_Disk_Server_2/log/cloud_server" /* 日志存储相对路径 相对于程序执行的server */
 #define LOG_BUFF_SIZE 4096
 
 extern ListNode* userList;
@@ -80,7 +80,8 @@ void doTask(task_t * task) {
     case CMD_TYPE_LS:               lsCommand(task);            break; // 3
     case CMD_TYPE_MKDIR:            mkdirCommand(task);         break; // 4
     case CMD_TYPE_RMDIR:            rmdirCommand(task);         break; // 5
-    case CMD_TYPE_NOTCMD:           notCommand(task);           break; // 6
+    case CMD_TYPE_TREE:             treeCommand(task);          break; // 6
+    case CMD_TYPE_NOTCMD:           notCommand(task);           break; // 7
     case CMD_TYPE_PUTS:             putsCommand(task);      
                                     addEpollReadfd(task->epfd, task->peerfd); /* 因为上传时关闭, 结束时再将添加到读就绪 */
                                     break; // 7

@@ -72,6 +72,7 @@ typedef enum {
     CMD_TYPE_PUTS,
     CMD_TYPE_GETS,
     CMD_TYPE_NOTCMD,  //不是命令
+    CMD_TYPE_TREE,
 
     /* 用户登录 */
     TASK_LOGIN_SECTION1 = 100,
@@ -117,9 +118,5 @@ int getCommandType(const char * str);
 void putsCommand(const int sockfd, const train_t * pt);
 // 执行下载文件操作
 void getsCommand(const int sockfd, const train_t* pt);
-// 接收cd命令
-void cdCommand(const int sockfd);
-/* 用于输出当前路径*/
-void pwdCommand(const int sockfd);
 /* 文件是否存在 */
 void file_is_exist(train_t* pt);

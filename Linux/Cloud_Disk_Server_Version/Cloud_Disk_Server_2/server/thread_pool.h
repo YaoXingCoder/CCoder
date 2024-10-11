@@ -75,6 +75,7 @@ typedef enum {
     CMD_TYPE_RMDIR, 
     CMD_TYPE_PUTS, 
     CMD_TYPE_GETS, 
+    CMD_TYPE_TREE, /* 2024.8.12 new cmd */
     CMD_TYPE_NOTCMD, /* 不是命令 */
 
     /* 用户登录 验证 */
@@ -164,6 +165,7 @@ void lsCommand(task_t * task);
 void pwdCommand(task_t * task);
 void mkdirCommand(task_t * task);
 void rmdirCommand(task_t * task);
+void treeCommand(task_t* task); /* 2024.8.12 new cmd */
 void notCommand(task_t * task);
 void putsCommand(task_t * task);
 void getsCommand(task_t * task);

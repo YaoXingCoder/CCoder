@@ -5,6 +5,7 @@
     > Mail: JiaZiChunQiu@163.com
     > Title: 命令函数
     > Content:
+    >   1.添加tree命令
  ************************************************************************/
 #include "str_util.h"
 #include "thread_pool.h"
@@ -446,3 +447,76 @@ void userRegisterCheck2(task_t * task) {
 
     return;
 }
+
+/* 2024.8.12 new cmd 
+ * tree v1.0 显示用户目录下的所有tree
+ * 原理: 递归
+ *
+ * get_tree_recur 递归函数
+ * sockfd   客户端的sockfd
+ * dirp     目录流的文件描述符
+ * 返回值
+ *      成功: 返回0
+ *      失败: 返回-1
+ * */ 
+
+static int get_tree_recur(int sockfd, const char* dirpath, int width) {
+    DIR* dirp = opendir(".");
+    if ( dirp == NULL ) { perror( "cmd.c get_tree_recur opendir"); return -1; }
+
+    struct dirent* pdirent; /* 记录目录项 */
+
+    /* 循环读取当前目录下的目录项 */
+    while ( (pdirent = readdir(dirp)) != NULL ) {
+        /* 忽略目录的. 和 .. */
+        if( strcmp(pdirent->d_name, ".") == 0 || strcmp(pdirent->d_name, "..") == 0  ) { continue; }
+
+        /* 记录前缀和索引 */
+        char prefix[32] = { 0 };
+        for( int i = 0; i < width; ++i) {
+            if ( i % 4 == 0 ) { strcat(prefix, "└"); continue; }
+            strcat(prefix, "一");
+        }
+
+        /* 发送当前的目录名给客户端 */
+        char filename[512] = { 0 };
+        sprintf(filename, "%s%s\n", prefix, pdirent->d_name);
+        int ret = sendn(sockfd, filename, strlen(filename));
+        /* printf("%s", filename); */
+
+        /* 判断当前文件是否是目录 */
+        if ( pdirent->d_type == DT_DIR ) {
+            int ret = chdir(pdirent->d_name); /* 切换到子目录下 */
+            get_tree_recur(sockfd, ".", width + 4); /* 遍历目录 */
+            ret = chdir(".."); /* 切换回父目录 */
+        }
+    }
+
+    /* 关闭资源 */
+    closedir(dirp);
+    return 0;
+}
+
+void treeCommand(task_t* task) {
+    printf("TREE_COMMAND.\n");
+
+    /* 用户返回给用户当前路径 */
+    char cur_path[CUR_PATH_SIZE] = { 0 };
+
+    /* 获取用户根目录 */
+    user_info_t* user;
+    findByPeerfd(userList, task->peerfd, &user);
+
+    /* 发送当前节点的. 给用户 */
+    int ret = sendn(task->peerfd, ".\n", 2);
+
+    /* 调用递归函数, 并发送给客户端目录树 */
+    ret = get_tree_recur(task->peerfd, ".", 0);
+
+    /* 最后发送当前目录给用户 */
+    getCurPath(task, cur_path);
+    ret = sendn(task->peerfd, cur_path, strlen(cur_path));
+    
+}
+
+

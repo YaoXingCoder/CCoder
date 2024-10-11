@@ -14,6 +14,7 @@
 #include "thread_pool.h"
 #include "user.h"
 #include "linked_list.h"
+#include "db_pool.h"
 
 #define EPOLL_ARR_SIZE 100
 
